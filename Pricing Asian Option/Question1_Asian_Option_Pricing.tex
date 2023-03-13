@@ -1,0 +1,860 @@
+\documentclass[11pt]{article}
+
+    \usepackage[breakable]{tcolorbox}
+    \usepackage{parskip} % Stop auto-indenting (to mimic markdown behaviour)
+    
+
+    % Basic figure setup, for now with no caption control since it's done
+    % automatically by Pandoc (which extracts ![](path) syntax from Markdown).
+    \usepackage{graphicx}
+    % Maintain compatibility with old templates. Remove in nbconvert 6.0
+    \let\Oldincludegraphics\includegraphics
+    % Ensure that by default, figures have no caption (until we provide a
+    % proper Figure object with a Caption API and a way to capture that
+    % in the conversion process - todo).
+    \usepackage{caption}
+    \DeclareCaptionFormat{nocaption}{}
+    \captionsetup{format=nocaption,aboveskip=0pt,belowskip=0pt}
+
+    \usepackage{float}
+    \floatplacement{figure}{H} % forces figures to be placed at the correct location
+    \usepackage{xcolor} % Allow colors to be defined
+    \usepackage{enumerate} % Needed for markdown enumerations to work
+    \usepackage{geometry} % Used to adjust the document margins
+    \usepackage{amsmath} % Equations
+    \usepackage{amssymb} % Equations
+    \usepackage{textcomp} % defines textquotesingle
+    % Hack from http://tex.stackexchange.com/a/47451/13684:
+    \AtBeginDocument{%
+        \def\PYZsq{\textquotesingle}% Upright quotes in Pygmentized code
+    }
+    \usepackage{upquote} % Upright quotes for verbatim code
+    \usepackage{eurosym} % defines \euro
+
+    \usepackage{iftex}
+    \ifPDFTeX
+        \usepackage[T1]{fontenc}
+        \IfFileExists{alphabeta.sty}{
+              \usepackage{alphabeta}
+          }{
+              \usepackage[mathletters]{ucs}
+              \usepackage[utf8x]{inputenc}
+          }
+    \else
+        \usepackage{fontspec}
+        \usepackage{unicode-math}
+    \fi
+
+    \usepackage{fancyvrb} % verbatim replacement that allows latex
+    \usepackage{grffile} % extends the file name processing of package graphics 
+                         % to support a larger range
+    \makeatletter % fix for old versions of grffile with XeLaTeX
+    \@ifpackagelater{grffile}{2019/11/01}
+    {
+      % Do nothing on new versions
+    }
+    {
+      \def\Gread@@xetex#1{%
+        \IfFileExists{"\Gin@base".bb}%
+        {\Gread@eps{\Gin@base.bb}}%
+        {\Gread@@xetex@aux#1}%
+      }
+    }
+    \makeatother
+    \usepackage[Export]{adjustbox} % Used to constrain images to a maximum size
+    \adjustboxset{max size={0.9\linewidth}{0.9\paperheight}}
+
+    % The hyperref package gives us a pdf with properly built
+    % internal navigation ('pdf bookmarks' for the table of contents,
+    % internal cross-reference links, web links for URLs, etc.)
+    \usepackage{hyperref}
+    % The default LaTeX title has an obnoxious amount of whitespace. By default,
+    % titling removes some of it. It also provides customization options.
+    \usepackage{titling}
+    \usepackage{longtable} % longtable support required by pandoc >1.10
+    \usepackage{booktabs}  % table support for pandoc > 1.12.2
+    \usepackage{array}     % table support for pandoc >= 2.11.3
+    \usepackage{calc}      % table minipage width calculation for pandoc >= 2.11.1
+    \usepackage[inline]{enumitem} % IRkernel/repr support (it uses the enumerate* environment)
+    \usepackage[normalem]{ulem} % ulem is needed to support strikethroughs (\sout)
+                                % normalem makes italics be italics, not underlines
+    \usepackage{mathrsfs}
+    
+
+    
+    % Colors for the hyperref package
+    \definecolor{urlcolor}{rgb}{0,.145,.698}
+    \definecolor{linkcolor}{rgb}{.71,0.21,0.01}
+    \definecolor{citecolor}{rgb}{.12,.54,.11}
+
+    % ANSI colors
+    \definecolor{ansi-black}{HTML}{3E424D}
+    \definecolor{ansi-black-intense}{HTML}{282C36}
+    \definecolor{ansi-red}{HTML}{E75C58}
+    \definecolor{ansi-red-intense}{HTML}{B22B31}
+    \definecolor{ansi-green}{HTML}{00A250}
+    \definecolor{ansi-green-intense}{HTML}{007427}
+    \definecolor{ansi-yellow}{HTML}{DDB62B}
+    \definecolor{ansi-yellow-intense}{HTML}{B27D12}
+    \definecolor{ansi-blue}{HTML}{208FFB}
+    \definecolor{ansi-blue-intense}{HTML}{0065CA}
+    \definecolor{ansi-magenta}{HTML}{D160C4}
+    \definecolor{ansi-magenta-intense}{HTML}{A03196}
+    \definecolor{ansi-cyan}{HTML}{60C6C8}
+    \definecolor{ansi-cyan-intense}{HTML}{258F8F}
+    \definecolor{ansi-white}{HTML}{C5C1B4}
+    \definecolor{ansi-white-intense}{HTML}{A1A6B2}
+    \definecolor{ansi-default-inverse-fg}{HTML}{FFFFFF}
+    \definecolor{ansi-default-inverse-bg}{HTML}{000000}
+
+    % common color for the border for error outputs.
+    \definecolor{outerrorbackground}{HTML}{FFDFDF}
+
+    % commands and environments needed by pandoc snippets
+    % extracted from the output of `pandoc -s`
+    \providecommand{\tightlist}{%
+      \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+    % Add ',fontsize=\small' for more characters per line
+    \newenvironment{Shaded}{}{}
+    \newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{{#1}}}
+    \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{{#1}}}}
+    \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{{#1}}}
+    \newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{{#1}}}
+    \newcommand{\RegionMarkerTok}[1]{{#1}}
+    \newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\NormalTok}[1]{{#1}}
+    
+    % Additional commands for more recent versions of Pandoc
+    \newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{{#1}}}
+    \newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{{#1}}}
+    \newcommand{\ImportTok}[1]{{#1}}
+    \newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{{#1}}}}
+    \newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{{#1}}}
+    \newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{{#1}}}
+    \newcommand{\BuiltInTok}[1]{{#1}}
+    \newcommand{\ExtensionTok}[1]{{#1}}
+    \newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{{#1}}}
+    \newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{{#1}}}
+    \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    
+    
+    % Define a nice break command that doesn't care if a line doesn't already
+    % exist.
+    \def\br{\hspace*{\fill} \\* }
+    % Math Jax compatibility definitions
+    \def\gt{>}
+    \def\lt{<}
+    \let\Oldtex\TeX
+    \let\Oldlatex\LaTeX
+    \renewcommand{\TeX}{\textrm{\Oldtex}}
+    \renewcommand{\LaTeX}{\textrm{\Oldlatex}}
+    % Document parameters
+    % Document title
+    \title{Question1\_Asian\_Option\_Pricing}
+    
+    
+    
+    
+    
+% Pygments definitions
+\makeatletter
+\def\PY@reset{\let\PY@it=\relax \let\PY@bf=\relax%
+    \let\PY@ul=\relax \let\PY@tc=\relax%
+    \let\PY@bc=\relax \let\PY@ff=\relax}
+\def\PY@tok#1{\csname PY@tok@#1\endcsname}
+\def\PY@toks#1+{\ifx\relax#1\empty\else%
+    \PY@tok{#1}\expandafter\PY@toks\fi}
+\def\PY@do#1{\PY@bc{\PY@tc{\PY@ul{%
+    \PY@it{\PY@bf{\PY@ff{#1}}}}}}}
+\def\PY#1#2{\PY@reset\PY@toks#1+\relax+\PY@do{#2}}
+
+\@namedef{PY@tok@w}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.73,0.73}{##1}}}
+\@namedef{PY@tok@c}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cp}{\def\PY@tc##1{\textcolor[rgb]{0.61,0.40,0.00}{##1}}}
+\@namedef{PY@tok@k}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kt}{\def\PY@tc##1{\textcolor[rgb]{0.69,0.00,0.25}{##1}}}
+\@namedef{PY@tok@o}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ow}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@nb}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nf}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@ne}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.80,0.25,0.22}{##1}}}
+\@namedef{PY@tok@nv}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@no}{\def\PY@tc##1{\textcolor[rgb]{0.53,0.00,0.00}{##1}}}
+\@namedef{PY@tok@nl}{\def\PY@tc##1{\textcolor[rgb]{0.46,0.46,0.00}{##1}}}
+\@namedef{PY@tok@ni}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.44,0.44,0.44}{##1}}}
+\@namedef{PY@tok@na}{\def\PY@tc##1{\textcolor[rgb]{0.41,0.47,0.13}{##1}}}
+\@namedef{PY@tok@nt}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nd}{\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@s}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sd}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@si}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.64,0.35,0.47}{##1}}}
+\@namedef{PY@tok@se}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.36,0.12}{##1}}}
+\@namedef{PY@tok@sr}{\def\PY@tc##1{\textcolor[rgb]{0.64,0.35,0.47}{##1}}}
+\@namedef{PY@tok@ss}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sx}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@m}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@gh}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gu}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.50,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gd}{\def\PY@tc##1{\textcolor[rgb]{0.63,0.00,0.00}{##1}}}
+\@namedef{PY@tok@gi}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.52,0.00}{##1}}}
+\@namedef{PY@tok@gr}{\def\PY@tc##1{\textcolor[rgb]{0.89,0.00,0.00}{##1}}}
+\@namedef{PY@tok@ge}{\let\PY@it=\textit}
+\@namedef{PY@tok@gs}{\let\PY@bf=\textbf}
+\@namedef{PY@tok@gp}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@go}{\def\PY@tc##1{\textcolor[rgb]{0.44,0.44,0.44}{##1}}}
+\@namedef{PY@tok@gt}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.27,0.87}{##1}}}
+\@namedef{PY@tok@err}{\def\PY@bc##1{{\setlength{\fboxsep}{\string -\fboxrule}\fcolorbox[rgb]{1.00,0.00,0.00}{1,1,1}{\strut ##1}}}}
+\@namedef{PY@tok@kc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kd}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kr}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@bp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@fm}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@vc}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vg}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vi}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vm}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sa}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sb}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sc}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@dl}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s2}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sh}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s1}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@mb}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mf}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mh}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mi}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@il}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mo}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ch}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cm}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cpf}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@c1}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cs}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+
+\def\PYZbs{\char`\\}
+\def\PYZus{\char`\_}
+\def\PYZob{\char`\{}
+\def\PYZcb{\char`\}}
+\def\PYZca{\char`\^}
+\def\PYZam{\char`\&}
+\def\PYZlt{\char`\<}
+\def\PYZgt{\char`\>}
+\def\PYZsh{\char`\#}
+\def\PYZpc{\char`\%}
+\def\PYZdl{\char`\$}
+\def\PYZhy{\char`\-}
+\def\PYZsq{\char`\'}
+\def\PYZdq{\char`\"}
+\def\PYZti{\char`\~}
+% for compatibility with earlier versions
+\def\PYZat{@}
+\def\PYZlb{[}
+\def\PYZrb{]}
+\makeatother
+
+
+    % For linebreaks inside Verbatim environment from package fancyvrb. 
+    \makeatletter
+        \newbox\Wrappedcontinuationbox 
+        \newbox\Wrappedvisiblespacebox 
+        \newcommand*\Wrappedvisiblespace {\textcolor{red}{\textvisiblespace}} 
+        \newcommand*\Wrappedcontinuationsymbol {\textcolor{red}{\llap{\tiny$\m@th\hookrightarrow$}}} 
+        \newcommand*\Wrappedcontinuationindent {3ex } 
+        \newcommand*\Wrappedafterbreak {\kern\Wrappedcontinuationindent\copy\Wrappedcontinuationbox} 
+        % Take advantage of the already applied Pygments mark-up to insert 
+        % potential linebreaks for TeX processing. 
+        %        {, <, #, %, $, ' and ": go to next line. 
+        %        _, }, ^, &, >, - and ~: stay at end of broken line. 
+        % Use of \textquotesingle for straight quote. 
+        \newcommand*\Wrappedbreaksatspecials {% 
+            \def\PYGZus{\discretionary{\char`\_}{\Wrappedafterbreak}{\char`\_}}% 
+            \def\PYGZob{\discretionary{}{\Wrappedafterbreak\char`\{}{\char`\{}}% 
+            \def\PYGZcb{\discretionary{\char`\}}{\Wrappedafterbreak}{\char`\}}}% 
+            \def\PYGZca{\discretionary{\char`\^}{\Wrappedafterbreak}{\char`\^}}% 
+            \def\PYGZam{\discretionary{\char`\&}{\Wrappedafterbreak}{\char`\&}}% 
+            \def\PYGZlt{\discretionary{}{\Wrappedafterbreak\char`\<}{\char`\<}}% 
+            \def\PYGZgt{\discretionary{\char`\>}{\Wrappedafterbreak}{\char`\>}}% 
+            \def\PYGZsh{\discretionary{}{\Wrappedafterbreak\char`\#}{\char`\#}}% 
+            \def\PYGZpc{\discretionary{}{\Wrappedafterbreak\char`\%}{\char`\%}}% 
+            \def\PYGZdl{\discretionary{}{\Wrappedafterbreak\char`\$}{\char`\$}}% 
+            \def\PYGZhy{\discretionary{\char`\-}{\Wrappedafterbreak}{\char`\-}}% 
+            \def\PYGZsq{\discretionary{}{\Wrappedafterbreak\textquotesingle}{\textquotesingle}}% 
+            \def\PYGZdq{\discretionary{}{\Wrappedafterbreak\char`\"}{\char`\"}}% 
+            \def\PYGZti{\discretionary{\char`\~}{\Wrappedafterbreak}{\char`\~}}% 
+        } 
+        % Some characters . , ; ? ! / are not pygmentized. 
+        % This macro makes them "active" and they will insert potential linebreaks 
+        \newcommand*\Wrappedbreaksatpunct {% 
+            \lccode`\~`\.\lowercase{\def~}{\discretionary{\hbox{\char`\.}}{\Wrappedafterbreak}{\hbox{\char`\.}}}% 
+            \lccode`\~`\,\lowercase{\def~}{\discretionary{\hbox{\char`\,}}{\Wrappedafterbreak}{\hbox{\char`\,}}}% 
+            \lccode`\~`\;\lowercase{\def~}{\discretionary{\hbox{\char`\;}}{\Wrappedafterbreak}{\hbox{\char`\;}}}% 
+            \lccode`\~`\:\lowercase{\def~}{\discretionary{\hbox{\char`\:}}{\Wrappedafterbreak}{\hbox{\char`\:}}}% 
+            \lccode`\~`\?\lowercase{\def~}{\discretionary{\hbox{\char`\?}}{\Wrappedafterbreak}{\hbox{\char`\?}}}% 
+            \lccode`\~`\!\lowercase{\def~}{\discretionary{\hbox{\char`\!}}{\Wrappedafterbreak}{\hbox{\char`\!}}}% 
+            \lccode`\~`\/\lowercase{\def~}{\discretionary{\hbox{\char`\/}}{\Wrappedafterbreak}{\hbox{\char`\/}}}% 
+            \catcode`\.\active
+            \catcode`\,\active 
+            \catcode`\;\active
+            \catcode`\:\active
+            \catcode`\?\active
+            \catcode`\!\active
+            \catcode`\/\active 
+            \lccode`\~`\~ 	
+        }
+    \makeatother
+
+    \let\OriginalVerbatim=\Verbatim
+    \makeatletter
+    \renewcommand{\Verbatim}[1][1]{%
+        %\parskip\z@skip
+        \sbox\Wrappedcontinuationbox {\Wrappedcontinuationsymbol}%
+        \sbox\Wrappedvisiblespacebox {\FV@SetupFont\Wrappedvisiblespace}%
+        \def\FancyVerbFormatLine ##1{\hsize\linewidth
+            \vtop{\raggedright\hyphenpenalty\z@\exhyphenpenalty\z@
+                \doublehyphendemerits\z@\finalhyphendemerits\z@
+                \strut ##1\strut}%
+        }%
+        % If the linebreak is at a space, the latter will be displayed as visible
+        % space at end of first line, and a continuation symbol starts next line.
+        % Stretch/shrink are however usually zero for typewriter font.
+        \def\FV@Space {%
+            \nobreak\hskip\z@ plus\fontdimen3\font minus\fontdimen4\font
+            \discretionary{\copy\Wrappedvisiblespacebox}{\Wrappedafterbreak}
+            {\kern\fontdimen2\font}%
+        }%
+        
+        % Allow breaks at special characters using \PYG... macros.
+        \Wrappedbreaksatspecials
+        % Breaks at punctuation characters . , ; ? ! and / need catcode=\active 	
+        \OriginalVerbatim[#1,codes*=\Wrappedbreaksatpunct]%
+    }
+    \makeatother
+
+    % Exact colors from NB
+    \definecolor{incolor}{HTML}{303F9F}
+    \definecolor{outcolor}{HTML}{D84315}
+    \definecolor{cellborder}{HTML}{CFCFCF}
+    \definecolor{cellbackground}{HTML}{F7F7F7}
+    
+    % prompt
+    \makeatletter
+    \newcommand{\boxspacing}{\kern\kvtcb@left@rule\kern\kvtcb@boxsep}
+    \makeatother
+    \newcommand{\prompt}[4]{
+        {\ttfamily\llap{{\color{#2}[#3]:\hspace{3pt}#4}}\vspace{-\baselineskip}}
+    }
+    
+
+    
+    % Prevent overflowing lines due to hard-to-break entities
+    \sloppy 
+    % Setup hyperref package
+    \hypersetup{
+      breaklinks=true,  % so long urls are correctly broken across lines
+      colorlinks=true,
+      urlcolor=urlcolor,
+      linkcolor=linkcolor,
+      citecolor=citecolor,
+      }
+    % Slightly bigger margins than the latex defaults
+    
+    \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+    
+    
+
+\begin{document}
+    
+    \maketitle
+    
+    
+
+    
+    \hypertarget{problem-1-pricing-an-asian-option}{%
+\subsection{Problem 1: Pricing an Asian
+Option}\label{problem-1-pricing-an-asian-option}}
+
+    \hypertarget{import-libraries}{%
+\subsubsection{Import Libraries}\label{import-libraries}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{1}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
+\PY{k+kn}{import} \PY{n+nn}{pandas} \PY{k}{as} \PY{n+nn}{pd}
+\PY{k+kn}{import} \PY{n+nn}{math}
+\PY{k+kn}{from} \PY{n+nn}{scipy}\PY{n+nn}{.}\PY{n+nn}{stats} \PY{k+kn}{import} \PY{n}{norm}
+\PY{k+kn}{import} \PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{pyplot} \PY{k}{as} \PY{n+nn}{plt}
+\PY{k+kn}{from} \PY{n+nn}{scipy}\PY{n+nn}{.}\PY{n+nn}{signal} \PY{k+kn}{import} \PY{n}{savgol\PYZus{}filter}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \hypertarget{set-parameters}{%
+\subsubsection{Set Parameters}\label{set-parameters}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{2}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{T} \PY{o}{=} \PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{5}\PY{p}{]}
+\PY{n}{m} \PY{o}{=} \PY{p}{[}\PY{l+m+mi}{4}\PY{p}{,}\PY{l+m+mi}{20}\PY{p}{]}
+\PY{n}{S0} \PY{o}{=} \PY{l+m+mi}{100}
+\PY{n}{r} \PY{o}{=} \PY{l+m+mf}{0.05}
+\PY{n}{sigma} \PY{o}{=} \PY{l+m+mf}{0.2}
+\PY{n}{N} \PY{o}{=} \PY{l+m+mi}{5000}
+\PY{n}{Ks} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{arange}\PY{p}{(}\PY{l+m+mi}{90}\PY{p}{,} \PY{l+m+mi}{121}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \hypertarget{define-functions}{%
+\subsubsection{Define Functions}\label{define-functions}}
+
+    \hypertarget{function-to-get-monte-carlo-simulation-price}{%
+\paragraph{1. Function to get Monte Carlo Simulation
+Price}\label{function-to-get-monte-carlo-simulation-price}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{3}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def} \PY{n+nf}{monte\PYZus{}carlo\PYZus{}price}\PY{p}{(}\PY{n}{S0}\PY{p}{,} \PY{n}{K}\PY{p}{,} \PY{n}{r}\PY{p}{,} \PY{n}{sigma}\PY{p}{,} \PY{n}{T}\PY{p}{,} \PY{n}{m}\PY{p}{,} \PY{n}{N}\PY{p}{)}\PY{p}{:}
+    \PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
+\PY{l+s+sd}{    Computes the price of an Asian option using Monte Carlo simulation.}
+\PY{l+s+sd}{    }
+\PY{l+s+sd}{    Parameters:}
+\PY{l+s+sd}{    S0 (float): initial stock price}
+\PY{l+s+sd}{    K (float): strike price}
+\PY{l+s+sd}{    r (float): risk\PYZhy{}free interest rate}
+\PY{l+s+sd}{    sigma (float): volatility}
+\PY{l+s+sd}{    T (float): time to maturity}
+\PY{l+s+sd}{    m (int): number of time steps}
+\PY{l+s+sd}{    N (int): number of simulations}
+\PY{l+s+sd}{    }
+\PY{l+s+sd}{    Returns:}
+\PY{l+s+sd}{    float: the estimated price of the Asian Call option}
+\PY{l+s+sd}{    \PYZdq{}\PYZdq{}\PYZdq{}}
+    \PY{c+c1}{\PYZsh{} Compute time step size}
+    \PY{n}{dt} \PY{o}{=} \PY{n}{T} \PY{o}{/} \PY{n}{m}
+    
+    \PY{c+c1}{\PYZsh{} Initialize array to store stock prices}
+    \PY{n}{St} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n}{N}\PY{p}{,} \PY{n}{m}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{)}
+
+    \PY{c+c1}{\PYZsh{} Set S0 as the starting point for simulation in each column}
+    \PY{n}{St}\PY{p}{[}\PY{p}{:}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{]} \PY{o}{=} \PY{n}{S0} 
+    
+    \PY{c+c1}{\PYZsh{} Simulate stock price paths using standard Brownian motion}
+    \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{m}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{:}
+        \PY{c+c1}{\PYZsh{} Generate N normally distributed random numbers}
+        \PY{n}{dW} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{normal}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,} \PY{n}{np}\PY{o}{.}\PY{n}{sqrt}\PY{p}{(}\PY{n}{dt}\PY{p}{)}\PY{p}{,} \PY{n}{size}\PY{o}{=}\PY{n}{N}\PY{p}{)}
+        
+        \PY{c+c1}{\PYZsh{} Update stock prices using the Black\PYZhy{}Scholes formula}
+        \PY{n}{St}\PY{p}{[}\PY{p}{:}\PY{p}{,} \PY{n}{i}\PY{p}{]} \PY{o}{=} \PY{n}{St}\PY{p}{[}\PY{p}{:}\PY{p}{,} \PY{n}{i}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]} \PY{o}{*} \PY{n}{np}\PY{o}{.}\PY{n}{exp}\PY{p}{(}\PY{p}{(}\PY{n}{r} \PY{o}{\PYZhy{}} \PY{l+m+mf}{0.5} \PY{o}{*} \PY{n}{sigma}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2}\PY{p}{)} \PY{o}{*} \PY{n}{dt} \PY{o}{+} \PY{n}{sigma} \PY{o}{*} \PY{n}{dW}\PY{p}{)}
+
+    \PY{c+c1}{\PYZsh{} Compute the Asian option payoffs}
+    \PY{n}{Sti} \PY{o}{=} \PY{n}{St}\PY{p}{[}\PY{p}{:}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{:}\PY{p}{]}
+    \PY{n}{prices} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{exp}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{n}{r} \PY{o}{*} \PY{n}{T}\PY{p}{)} \PY{o}{*} \PY{n}{np}\PY{o}{.}\PY{n}{maximum}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{sum}\PY{p}{(}\PY{n}{Sti}\PY{p}{,} \PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{)} \PY{o}{/} \PY{n}{m} \PY{o}{\PYZhy{}} \PY{n}{K}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{)}
+    
+    \PY{c+c1}{\PYZsh{} Save the average values from 5000 simulations in numpy array}
+    \PY{n}{bach\PYZus{}dist} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{sum}\PY{p}{(}\PY{n}{Sti}\PY{p}{,} \PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{)} \PY{o}{/} \PY{n}{m}
+    
+    \PY{c+c1}{\PYZsh{} Compute the estimated price of the Asian option as the mean of the payoffs}
+    \PY{n}{price} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{n}{prices}\PY{p}{)}
+    
+    \PY{c+c1}{\PYZsh{} Return Asian Call Option Price and simulation results to be used in Bachelier Model}
+    \PY{k}{return} \PY{p}{[}\PY{n+nb}{round}\PY{p}{(}\PY{n}{price}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{)}\PY{p}{]}\PY{p}{,} \PY{n}{bach\PYZus{}dist}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \hypertarget{functions-to-get-price-through-log-normal-approximation-using-the-black-scholes-formula}{%
+\paragraph{2. Functions to get price through log normal approximation
+using the Black Scholes
+Formula}\label{functions-to-get-price-through-log-normal-approximation-using-the-black-scholes-formula}}
+
+    2(a). Black Scholes Formula (used in main function to calculate log
+normal price)
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{4}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def} \PY{n+nf}{black\PYZus{}scholes\PYZus{}formula}\PY{p}{(}\PY{n}{S0}\PY{p}{,} \PY{n}{sigma}\PY{p}{,} \PY{n}{r}\PY{p}{,} \PY{n}{T}\PY{p}{,} \PY{n}{K}\PY{p}{)}\PY{p}{:}
+    \PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
+\PY{l+s+sd}{    Computes the price of a European call option using the Black\PYZhy{}Scholes formula.}
+\PY{l+s+sd}{    }
+\PY{l+s+sd}{    Parameters:}
+\PY{l+s+sd}{    S0 (float): initial stock price}
+\PY{l+s+sd}{    sigma (float): volatility}
+\PY{l+s+sd}{    r (float): risk\PYZhy{}free interest rate}
+\PY{l+s+sd}{    T (float): time to maturity}
+\PY{l+s+sd}{    K (float): strike price}
+\PY{l+s+sd}{    }
+\PY{l+s+sd}{    Returns:}
+\PY{l+s+sd}{    float: the estimated price of the call option}
+\PY{l+s+sd}{    \PYZdq{}\PYZdq{}\PYZdq{}}
+    \PY{c+c1}{\PYZsh{} Compute d1 and d2, which are intermediate variables used in the Black\PYZhy{}Scholes formula}
+    \PY{n}{d1} \PY{o}{=} \PY{p}{(}\PY{n}{math}\PY{o}{.}\PY{n}{log}\PY{p}{(}\PY{n}{S0}\PY{o}{/}\PY{n}{K}\PY{p}{)} \PY{o}{+} \PY{p}{(}\PY{n}{r} \PY{o}{+} \PY{p}{(}\PY{n}{sigma}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2}\PY{o}{/}\PY{l+m+mi}{2}\PY{p}{)}\PY{p}{)}\PY{o}{*}\PY{p}{(}\PY{n}{T}\PY{p}{)}\PY{p}{)} \PY{o}{/} \PY{p}{(}\PY{n}{math}\PY{o}{.}\PY{n}{sqrt}\PY{p}{(}\PY{n}{T}\PY{p}{)}\PY{o}{*}\PY{n}{sigma}\PY{p}{)}
+    \PY{n}{d2} \PY{o}{=} \PY{n}{d1} \PY{o}{\PYZhy{}} \PY{p}{(}\PY{n}{math}\PY{o}{.}\PY{n}{sqrt}\PY{p}{(}\PY{n}{T}\PY{p}{)} \PY{o}{*} \PY{n}{sigma}\PY{p}{)}
+    
+    \PY{c+c1}{\PYZsh{} Compute the price of the call option using the Black\PYZhy{}Scholes formula}
+    \PY{n}{C} \PY{o}{=} \PY{p}{(}\PY{n}{S0} \PY{o}{*} \PY{n}{norm}\PY{o}{.}\PY{n}{cdf}\PY{p}{(}\PY{n}{d1}\PY{p}{)}\PY{p}{)} \PY{o}{\PYZhy{}} \PY{p}{(}\PY{n}{K} \PY{o}{*} \PY{n}{math}\PY{o}{.}\PY{n}{exp}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{n}{r}\PY{o}{*}\PY{n}{T}\PY{p}{)} \PY{o}{*} \PY{n}{norm}\PY{o}{.}\PY{n}{cdf}\PY{p}{(}\PY{n}{d2}\PY{p}{)}\PY{p}{)}
+    
+    \PY{c+c1}{\PYZsh{} Round the estimated price to two decimal places and return it}
+    \PY{k}{return} \PY{n+nb}{round}\PY{p}{(}\PY{n}{C}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    2(b). Formula to calculate M2 used in log normal approximation pricing
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{5}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def} \PY{n+nf}{calculate\PYZus{}M2}\PY{p}{(}\PY{n}{r}\PY{p}{,} \PY{n}{dt}\PY{p}{,} \PY{n}{sigma}\PY{p}{,} \PY{n}{S0}\PY{p}{,} \PY{n}{m}\PY{p}{)}\PY{p}{:}
+    \PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
+\PY{l+s+sd}{    Calculates the second moment of the stock price at maturity using the Euler\PYZhy{}Maruyama discretization.}
+\PY{l+s+sd}{    }
+\PY{l+s+sd}{    Parameters:}
+\PY{l+s+sd}{    r (float): the risk\PYZhy{}free interest rate}
+\PY{l+s+sd}{    dt (float): the time step size}
+\PY{l+s+sd}{    sigma (float): the volatility of the stock price}
+\PY{l+s+sd}{    S0 (float): the initial stock price}
+\PY{l+s+sd}{    m (int): the number of time steps}
+\PY{l+s+sd}{    }
+\PY{l+s+sd}{    Returns:}
+\PY{l+s+sd}{    float: the estimated second moment of the stock price at maturity}
+\PY{l+s+sd}{    \PYZdq{}\PYZdq{}\PYZdq{}}
+    \PY{n}{M2} \PY{o}{=} \PY{l+m+mi}{0}  \PY{c+c1}{\PYZsh{} Initialize the second moment}
+    
+    \PY{c+c1}{\PYZsh{} Compute the sum of the cross terms of the Euler\PYZhy{}Maruyama discretization}
+    \PY{k}{for} \PY{n}{j} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{m}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{:}
+        \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{j}\PY{p}{)}\PY{p}{:}
+            \PY{n}{M2} \PY{o}{+}\PY{o}{=} \PY{l+m+mi}{2} \PY{o}{*} \PY{p}{(}\PY{p}{(}\PY{n}{S0} \PY{o}{*} \PY{n}{np}\PY{o}{.}\PY{n}{exp}\PY{p}{(}\PY{n}{r}\PY{o}{*}\PY{n}{i}\PY{o}{*}\PY{n}{dt}\PY{p}{)}\PY{p}{)} \PY{o}{*} \PY{p}{(}\PY{n}{S0} \PY{o}{*} \PY{n}{np}\PY{o}{.}\PY{n}{exp}\PY{p}{(}\PY{n}{r}\PY{o}{*}\PY{n}{j}\PY{o}{*}\PY{n}{dt}\PY{p}{)}\PY{p}{)} \PY{o}{*} \PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{exp}\PY{p}{(}\PY{p}{(}\PY{n}{sigma} \PY{o}{*}\PY{o}{*} \PY{l+m+mi}{2}\PY{p}{)} \PY{o}{*} \PY{n}{i} \PY{o}{*} \PY{n}{dt}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+    
+    \PY{c+c1}{\PYZsh{} Compute the sum of the squared terms of the Euler\PYZhy{}Maruyama discretization}
+    \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{m}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{:}
+        \PY{n}{M2} \PY{o}{+}\PY{o}{=} \PY{p}{(}\PY{p}{(}\PY{n}{S0} \PY{o}{*} \PY{n}{np}\PY{o}{.}\PY{n}{exp}\PY{p}{(}\PY{n}{r}\PY{o}{*}\PY{n}{i}\PY{o}{*}\PY{n}{dt}\PY{p}{)}\PY{p}{)}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2}\PY{p}{)} \PY{o}{*} \PY{n}{np}\PY{o}{.}\PY{n}{exp}\PY{p}{(}\PY{p}{(}\PY{n}{sigma}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2}\PY{p}{)}\PY{o}{*}\PY{p}{(}\PY{n}{i}\PY{o}{*}\PY{n}{dt}\PY{p}{)}\PY{p}{)}
+    
+    \PY{c+c1}{\PYZsh{} Compute the estimated second moment by dividing by the square of the number of time steps}
+    \PY{k}{return} \PY{p}{(}\PY{n}{M2} \PY{o}{/} \PY{p}{(}\PY{n}{m}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    2(c). Main function to calculate log normal price
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{6}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def} \PY{n+nf}{log\PYZus{}normal\PYZus{}price}\PY{p}{(}\PY{n}{S0}\PY{p}{,} \PY{n}{K}\PY{p}{,} \PY{n}{r}\PY{p}{,} \PY{n}{sigma}\PY{p}{,} \PY{n}{T}\PY{p}{,} \PY{n}{m}\PY{p}{)}\PY{p}{:}
+    \PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
+\PY{l+s+sd}{    Computes the price of an Asian option using the log\PYZhy{}normal approximation method.}
+\PY{l+s+sd}{    }
+\PY{l+s+sd}{    Parameters:}
+\PY{l+s+sd}{    S0 (float): the initial stock price}
+\PY{l+s+sd}{    K (float): the strike price}
+\PY{l+s+sd}{    r (float): the risk\PYZhy{}free interest rate}
+\PY{l+s+sd}{    sigma (float): the volatility of the stock price}
+\PY{l+s+sd}{    T (float): the time to maturity of the option}
+\PY{l+s+sd}{    m (int): the number of time steps}
+\PY{l+s+sd}{    }
+\PY{l+s+sd}{    Returns:}
+\PY{l+s+sd}{    float: the estimated price of the Asian option using the log\PYZhy{}normal approximation method}
+\PY{l+s+sd}{    \PYZdq{}\PYZdq{}\PYZdq{}}
+    \PY{c+c1}{\PYZsh{} Compute time step size}
+    \PY{n}{dt} \PY{o}{=} \PY{n}{T}\PY{o}{/}\PY{n}{m}
+    
+    \PY{c+c1}{\PYZsh{} Compute the first moment of the stock price at maturity}
+    \PY{n}{M1} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{sum}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{p}{[}\PY{n}{S0}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{exp}\PY{p}{(}\PY{n}{r}\PY{o}{*}\PY{n}{i}\PY{o}{*}\PY{n}{dt}\PY{p}{)} \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{m}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{]}\PY{p}{)}\PY{p}{)} \PY{o}{/} \PY{n}{m}
+    
+    \PY{c+c1}{\PYZsh{} Compute the second moment of the stock price at maturity by calling the calculate\PYZus{}M2 function defined above}
+    \PY{n}{M2} \PY{o}{=} \PY{n}{calculate\PYZus{}M2}\PY{p}{(}\PY{n}{r}\PY{p}{,} \PY{n}{dt}\PY{p}{,} \PY{n}{sigma}\PY{p}{,} \PY{n}{S0}\PY{p}{,} \PY{n}{m}\PY{p}{)}
+    
+    \PY{c+c1}{\PYZsh{} Compute the estimated volatility and drift of the stock price using the log\PYZhy{}normal approximation method}
+    \PY{n}{sigma\PYZus{}hat} \PY{o}{=} \PY{n}{math}\PY{o}{.}\PY{n}{sqrt}\PY{p}{(}\PY{p}{(}\PY{l+m+mi}{1}\PY{o}{/}\PY{n}{T}\PY{p}{)} \PY{o}{*} \PY{n}{math}\PY{o}{.}\PY{n}{log}\PY{p}{(}\PY{n}{M2} \PY{o}{/} \PY{p}{(}\PY{n}{M1}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+    \PY{n}{S0\PYZus{}hat} \PY{o}{=} \PY{n}{M1} \PY{o}{*} \PY{n}{np}\PY{o}{.}\PY{n}{exp}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{n}{r} \PY{o}{*} \PY{n}{T}\PY{p}{)}
+    
+    \PY{c+c1}{\PYZsh{} Use the estimated volatility and drift to compute the price of the Asian option using the Black\PYZhy{}Scholes formula}
+    \PY{k}{return} \PY{n}{black\PYZus{}scholes\PYZus{}formula}\PY{p}{(}\PY{n}{S0\PYZus{}hat}\PY{p}{,} \PY{n}{sigma\PYZus{}hat}\PY{p}{,} \PY{n}{r}\PY{p}{,} \PY{n}{T}\PY{p}{,} \PY{n}{K}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \hypertarget{function-to-get-prices-with-normal-approximation-using-the-bachelier-call-formula}{%
+\paragraph{3. Function to get prices with normal approximation using the
+Bachelier Call
+Formula}\label{function-to-get-prices-with-normal-approximation-using-the-bachelier-call-formula}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{7}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def} \PY{n+nf}{bachelier\PYZus{}price}\PY{p}{(}\PY{n}{bach\PYZus{}dist}\PY{p}{,} \PY{n}{K}\PY{p}{,} \PY{n}{r}\PY{p}{,} \PY{n}{T}\PY{p}{)}\PY{p}{:}
+    \PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
+\PY{l+s+sd}{    Computes the price of an Asian option using the Bachelier Normal approximation method.}
+\PY{l+s+sd}{    }
+\PY{l+s+sd}{    Parameters:}
+\PY{l+s+sd}{    S0 (float): the initial stock price}
+\PY{l+s+sd}{    K (float): the strike price}
+\PY{l+s+sd}{    r (float): the risk\PYZhy{}free interest rate}
+\PY{l+s+sd}{    sigma (float): the volatility of the stock price}
+\PY{l+s+sd}{    T (float): the time to maturity of the option}
+\PY{l+s+sd}{    }
+\PY{l+s+sd}{    Returns:}
+\PY{l+s+sd}{    float: the estimated price of the Asian option using the Normal approximation method}
+\PY{l+s+sd}{    \PYZdq{}\PYZdq{}\PYZdq{}}
+
+    \PY{c+c1}{\PYZsh{} Calculate F and sigma for bachelier distribution}
+    \PY{n}{Fb} \PY{o}{=} \PY{n}{bach\PYZus{}dist}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}
+    \PY{n}{sigmaB} \PY{o}{=} \PY{n}{bach\PYZus{}dist}\PY{o}{.}\PY{n}{std}\PY{p}{(}\PY{p}{)}
+    
+    \PY{c+c1}{\PYZsh{} Calculate the standardized normal variable}
+    \PY{n}{Z} \PY{o}{=} \PY{p}{(}\PY{n}{Fb} \PY{o}{\PYZhy{}} \PY{n}{K}\PY{p}{)} \PY{o}{/} \PY{p}{(}\PY{n}{sigmaB}\PY{p}{)}
+    
+    \PY{c+c1}{\PYZsh{} Use the Bachelier Call formula to calculate the option price}
+    \PY{n}{C} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{exp}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{n}{r}\PY{o}{*}\PY{n}{T}\PY{p}{)} \PY{o}{*} \PY{p}{(}\PY{p}{(}\PY{n}{Fb} \PY{o}{\PYZhy{}} \PY{n}{K}\PY{p}{)}\PY{o}{*}\PY{n}{norm}\PY{o}{.}\PY{n}{cdf}\PY{p}{(}\PY{n}{Z}\PY{p}{)} \PY{o}{+} \PY{p}{(}\PY{n}{sigmaB} \PY{o}{*} \PY{n}{norm}\PY{o}{.}\PY{n}{pdf}\PY{p}{(}\PY{n}{Z}\PY{p}{,} \PY{n}{loc}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,} \PY{n}{scale}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+    
+    \PY{c+c1}{\PYZsh{} Round the option price to two decimal places and return}
+    \PY{k}{return} \PY{n+nb}{round}\PY{p}{(}\PY{n}{C}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \hypertarget{main-code}{%
+\subsubsection{Main Code:}\label{main-code}}
+
+\begin{verbatim}
+- Fetches the asian option price through three methods defined
+- Runs the code of a range of strike prices and for different combinations of (T, m)
+- Stores the results in a dataframe and prints it
+\end{verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{8}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Initialize two empty dictionaries to store Asian option call prices for two different values of (T,m) i.e. (1,4) and (5,20)}
+\PY{n}{asian\PYZus{}option\PYZus{}1\PYZus{}4} \PY{o}{=} \PY{p}{\PYZob{}}\PY{p}{\PYZcb{}}
+\PY{n}{asian\PYZus{}option\PYZus{}5\PYZus{}20} \PY{o}{=} \PY{p}{\PYZob{}}\PY{p}{\PYZcb{}}
+
+\PY{c+c1}{\PYZsh{} For each strike price (K), fetch the call option prices using}
+\PY{c+c1}{\PYZsh{} Monte Carlo, log normal, and Bachelier pricing models for the two different (T,m) values}
+
+\PY{k}{for} \PY{n}{K} \PY{o+ow}{in} \PY{n}{Ks}\PY{p}{:}
+    \PY{c+c1}{\PYZsh{} For (1,4) calculate the call option prices and store in the dictionary asian\PYZus{}option\PYZus{}1\PYZus{}4}
+    \PY{n}{asian\PYZus{}option\PYZus{}1\PYZus{}4}\PY{p}{[}\PY{n}{K}\PY{p}{]}\PY{p}{,} \PY{n}{bach\PYZus{}dist\PYZus{}1} \PY{o}{=} \PY{n}{monte\PYZus{}carlo\PYZus{}price}\PY{p}{(}\PY{n}{S0}\PY{p}{,} \PY{n}{K}\PY{p}{,} \PY{n}{r}\PY{p}{,} \PY{n}{sigma}\PY{p}{,} \PY{n}{T}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,} \PY{n}{m}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,} \PY{n}{N}\PY{p}{)}
+    \PY{n}{asian\PYZus{}option\PYZus{}1\PYZus{}4}\PY{p}{[}\PY{n}{K}\PY{p}{]}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{log\PYZus{}normal\PYZus{}price}\PY{p}{(}\PY{n}{S0}\PY{p}{,} \PY{n}{K}\PY{p}{,} \PY{n}{r}\PY{p}{,} \PY{n}{sigma}\PY{p}{,} \PY{n}{T}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,} \PY{n}{m}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+    \PY{n}{asian\PYZus{}option\PYZus{}1\PYZus{}4}\PY{p}{[}\PY{n}{K}\PY{p}{]}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{bachelier\PYZus{}price}\PY{p}{(}\PY{n}{bach\PYZus{}dist\PYZus{}1}\PY{p}{,} \PY{n}{K}\PY{p}{,} \PY{n}{r}\PY{p}{,} \PY{n}{T}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+    
+    \PY{c+c1}{\PYZsh{} For (5,20) calculate the call option prices and store in the dictionary asian\PYZus{}option\PYZus{}5\PYZus{}20}
+    \PY{n}{asian\PYZus{}option\PYZus{}5\PYZus{}20}\PY{p}{[}\PY{n}{K}\PY{p}{]}\PY{p}{,} \PY{n}{bach\PYZus{}dist\PYZus{}2} \PY{o}{=} \PY{n}{monte\PYZus{}carlo\PYZus{}price}\PY{p}{(}\PY{n}{S0}\PY{p}{,} \PY{n}{K}\PY{p}{,} \PY{n}{r}\PY{p}{,} \PY{n}{sigma}\PY{p}{,} \PY{n}{T}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} \PY{n}{m}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} \PY{n}{N}\PY{p}{)}
+    \PY{n}{asian\PYZus{}option\PYZus{}5\PYZus{}20}\PY{p}{[}\PY{n}{K}\PY{p}{]}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{log\PYZus{}normal\PYZus{}price}\PY{p}{(}\PY{n}{S0}\PY{p}{,} \PY{n}{K}\PY{p}{,} \PY{n}{r}\PY{p}{,} \PY{n}{sigma}\PY{p}{,} \PY{n}{T}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} \PY{n}{m}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+    \PY{n}{asian\PYZus{}option\PYZus{}5\PYZus{}20}\PY{p}{[}\PY{n}{K}\PY{p}{]}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{bachelier\PYZus{}price}\PY{p}{(}\PY{n}{bach\PYZus{}dist\PYZus{}2}\PY{p}{,} \PY{n}{K}\PY{p}{,} \PY{n}{r}\PY{p}{,} \PY{n}{T}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Convert the dictionaries asian\PYZus{}option\PYZus{}1\PYZus{}4 and asian\PYZus{}option\PYZus{}5\PYZus{}20 into pandas DataFrames with the strike prices as the index and the prices obtained from each pricing model as columns}
+\PY{n}{asian\PYZus{}price\PYZus{}1\PYZus{}4\PYZus{}df} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{o}{.}\PY{n}{from\PYZus{}dict}\PY{p}{(}\PY{n}{asian\PYZus{}option\PYZus{}1\PYZus{}4}\PY{p}{,} \PY{n}{orient}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{index}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{columns}\PY{o}{=}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Monte Carlo}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{log normal}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Bachelier}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+\PY{n}{asian\PYZus{}price\PYZus{}5\PYZus{}20\PYZus{}df} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{o}{.}\PY{n}{from\PYZus{}dict}\PY{p}{(}\PY{n}{asian\PYZus{}option\PYZus{}5\PYZus{}20}\PY{p}{,} \PY{n}{orient}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{index}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{columns}\PY{o}{=}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Monte Carlo}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{log normal}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Bachelier}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Rename the index of the DataFrames to \PYZsq{}Strike\PYZsq{}}
+\PY{n}{asian\PYZus{}price\PYZus{}1\PYZus{}4\PYZus{}df} \PY{o}{=} \PY{n}{asian\PYZus{}price\PYZus{}1\PYZus{}4\PYZus{}df}\PY{o}{.}\PY{n}{rename\PYZus{}axis}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Strike}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{asian\PYZus{}price\PYZus{}5\PYZus{}20\PYZus{}df} \PY{o}{=} \PY{n}{asian\PYZus{}price\PYZus{}5\PYZus{}20\PYZus{}df}\PY{o}{.}\PY{n}{rename\PYZus{}axis}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Strike}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{9}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Display asian option prices for So = \PYZdl{}100, r = 5\PYZpc{}, sigma = 0.2, T = 1 and m = 4}
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Asian Option Price when T = 1 and m = 4:}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{asian\PYZus{}price\PYZus{}1\PYZus{}4\PYZus{}df}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Asian Option Price when T = 1 and m = 4:
+
+         Monte Carlo  log normal  Bachelier
+Strike
+90            13.62       13.61      13.91
+91            12.88       12.83      13.19
+92            12.07       12.08      12.30
+93            11.15       11.35      11.40
+94            10.75       10.65      11.01
+95             9.82        9.97      10.02
+96             9.24        9.31       9.46
+97             8.60        8.68       8.84
+98             8.26        8.08       8.44
+99             7.52        7.50       7.67
+100            6.90        6.95       7.01
+101            6.25        6.43       6.34
+102            6.09        5.94       6.16
+103            5.35        5.47       5.37
+104            4.92        5.03       4.94
+105            4.56        4.61       4.55
+106            4.03        4.22       3.99
+107            3.88        3.86       3.78
+108            3.51        3.52       3.38
+109            3.04        3.20       2.93
+110            2.97        2.91       2.86
+111            2.72        2.64       2.57
+112            2.44        2.39       2.29
+113            2.29        2.16       2.12
+114            1.91        1.95       1.73
+115            1.73        1.75       1.55
+116            1.44        1.57       1.22
+117            1.46        1.41       1.23
+118            1.22        1.26       1.00
+119            1.07        1.13       0.87
+120            1.04        1.00       0.81
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{10}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Display asian option prices for So = \PYZdl{}100, r = 5\PYZpc{}, sigma = 0.2, T = 5 and m = 20}
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Asian Option Price when T = 5 and m = 20:}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{asian\PYZus{}price\PYZus{}5\PYZus{}20\PYZus{}df}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Asian Option Price when T = 5 and m = 20:
+
+         Monte Carlo  log normal  Bachelier
+Strike
+90            21.50       21.29      22.58
+91            20.31       20.70      21.32
+92            20.23       20.12      21.39
+93            18.44       19.55      19.48
+94            19.05       18.99      20.06
+95            18.23       18.44      19.36
+96            18.34       17.90      19.46
+97            17.29       17.37      18.34
+98            16.95       16.84      17.93
+99            15.83       16.34      16.82
+100           15.48       15.84      16.40
+101           16.05       15.35      16.97
+102           14.82       14.87      15.66
+103           14.08       14.40      14.80
+104           13.84       13.94      14.72
+105           13.80       13.50      14.67
+106           12.57       13.06      13.35
+107           12.49       12.64      13.03
+108           11.64       12.22      12.17
+109           12.28       11.82      12.97
+110           11.52       11.42      11.92
+111           10.98       11.04      11.38
+112           10.19       10.66      10.55
+113            9.96       10.30      10.35
+114            9.69        9.95       9.91
+115           10.02        9.60      10.32
+116            9.40        9.27       9.64
+117            8.48        8.94       8.59
+118            8.05        8.62       8.18
+119            8.31        8.32       8.45
+120            8.19        8.02       8.32
+    \end{Verbatim}
+
+    \hypertarget{conclusion}{%
+\subsubsection{Conclusion:}\label{conclusion}}
+
+At T = 1, all three prices almost overlap and give similar results.
+Based on the analysis conducted, it can be concluded that for shorter
+periods, both the log-normal and Bachelier approximation methods provide
+accurate results, with the log-normal method performing slightly better.
+However, as the time to maturity increases, the Bachelier method begins
+to produce prices with larger errors, while the log-normal method
+continues to provide good estimates. This is evident from the fact that,
+at T = 5 years, the log-normal prices closely match the Monte Carlo
+estimates, while the Bachelier prices exhibit relatively poor results.
+Hence, for longer time periods, the log-normal method is more reliable
+in accurately estimating prices.
+
+    \hypertarget{additional-analysis-by-plotting}{%
+\subsubsection{Additional Analysis by
+plotting}\label{additional-analysis-by-plotting}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{11}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{} }
+\PY{l+s+sd}{Plot Asian Option Price obtained through }
+\PY{l+s+sd}{Monte Carlo Simulation (n = 5000), Log Normal Approximation and Bachelier Normal Approximation}
+\PY{l+s+sd}{when T = 1 and m = 4}
+\PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
+\PY{c+c1}{\PYZsh{} Apply Savitzky\PYZhy{}Golay filter to smoothen the line}
+\PY{n}{asian\PYZus{}price\PYZus{}1\PYZus{}4\PYZus{}df}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Monte Carlo Smooth}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{savgol\PYZus{}filter}\PY{p}{(}\PY{n}{asian\PYZus{}price\PYZus{}1\PYZus{}4\PYZus{}df}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Monte Carlo}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{n}{window\PYZus{}length}\PY{o}{=}\PY{l+m+mi}{21}\PY{p}{,} \PY{n}{polyorder}\PY{o}{=}\PY{l+m+mi}{2}\PY{p}{)}
+\PY{n}{asian\PYZus{}price\PYZus{}1\PYZus{}4\PYZus{}df}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Bachelier Smooth}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{savgol\PYZus{}filter}\PY{p}{(}\PY{n}{asian\PYZus{}price\PYZus{}1\PYZus{}4\PYZus{}df}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Bachelier}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{n}{window\PYZus{}length}\PY{o}{=}\PY{l+m+mi}{21}\PY{p}{,} \PY{n}{polyorder}\PY{o}{=}\PY{l+m+mi}{2}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Define the figure and axes objects}
+\PY{n}{fig}\PY{p}{,} \PY{n}{ax} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{subplots}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{10}\PY{p}{,} \PY{l+m+mi}{6}\PY{p}{)}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Plot the three columns against the index}
+\PY{n}{asian\PYZus{}price\PYZus{}1\PYZus{}4\PYZus{}df}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{ax}\PY{o}{=}\PY{n}{ax}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Monte Carlo Smooth}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{log normal}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Bachelier Smooth}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{n}{linestyle}\PY{o}{=}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZhy{}.}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Set the labels and title}
+\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Strike Price}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Asian Option Price}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}title}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Asian Option Price for So = \PYZdl{}100, r = 5}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{, sigma = 0.2, T = 1 and m = 4}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Add the legend}
+\PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Monte Carlo (n=5000)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Log Normal}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Bachelier}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Show the plot}
+\PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_23_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{12}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{} }
+\PY{l+s+sd}{Plot Asian Option Price obtained through }
+\PY{l+s+sd}{Monte Carlo Simulation (n = 5000), Log Normal Approximation and Bachelier Normal Approximation}
+\PY{l+s+sd}{when T = 5 and m = 20}
+\PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
+\PY{c+c1}{\PYZsh{} Apply Savitzky\PYZhy{}Golay filter to smoothen the line}
+\PY{n}{asian\PYZus{}price\PYZus{}5\PYZus{}20\PYZus{}df}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Monte Carlo Smooth}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{savgol\PYZus{}filter}\PY{p}{(}\PY{n}{asian\PYZus{}price\PYZus{}5\PYZus{}20\PYZus{}df}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Monte Carlo}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{n}{window\PYZus{}length}\PY{o}{=}\PY{l+m+mi}{21}\PY{p}{,} \PY{n}{polyorder}\PY{o}{=}\PY{l+m+mi}{2}\PY{p}{)}
+\PY{n}{asian\PYZus{}price\PYZus{}5\PYZus{}20\PYZus{}df}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Bachelier Smooth}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{savgol\PYZus{}filter}\PY{p}{(}\PY{n}{asian\PYZus{}price\PYZus{}5\PYZus{}20\PYZus{}df}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Bachelier}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{n}{window\PYZus{}length}\PY{o}{=}\PY{l+m+mi}{21}\PY{p}{,} \PY{n}{polyorder}\PY{o}{=}\PY{l+m+mi}{2}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Define the figure and axes objects}
+\PY{n}{fig}\PY{p}{,} \PY{n}{ax} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{subplots}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{10}\PY{p}{,} \PY{l+m+mi}{6}\PY{p}{)}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Plot the three columns against the index}
+\PY{n}{asian\PYZus{}price\PYZus{}5\PYZus{}20\PYZus{}df}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{ax}\PY{o}{=}\PY{n}{ax}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Monte Carlo Smooth}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{log normal}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Bachelier Smooth}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{n}{linestyle}\PY{o}{=}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZhy{}.}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Set the labels and title}
+\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Strike Price}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Asian Option Price}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}title}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Asian Option Price for So = \PYZdl{}100, r = 5}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{, sigma = 0.2, T = 5 and m = 20}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Add the legend}
+\PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Monte Carlo (n=5000)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Log Normal}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Bachelier}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Show the plot}
+\PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_24_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+
+    % Add a bibliography block to the postdoc
+    
+    
+    
+\end{document}
