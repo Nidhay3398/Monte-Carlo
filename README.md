@@ -1,2 +1,2 @@
 # Monte-Carlo
-Application of Monte Carlo Methods to Problems in Finance
+Application of Monte Carlo Methods to problems in finance
